@@ -5,6 +5,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 import time
 import re
 from datetime import datetime
+from pymongo import MongoClient
 
 def splitEmentasToTag(str):
     b = str.split("\n")
@@ -31,7 +32,19 @@ def splitYear(str):
     c = datetime.strptime(b[0], '%d/%m/%Y')
     return c.year
 
+def splitTipoProcesso(str):
+    b = str.split("\n")
+    return b[1]
+
+def splitNome(str):
+    c = re.findall(r"([a-zA-Z\s]+)",str)
+    return c[0]
+
 PATH = "C:/Users/wilki/TG/chromedriver.exe"
+
+client = MongoClient("mongodb+srv://wilkinson_maciel:1234567890@cluster0.izkuog8.mongodb.net/?retryWrites=true&w=majority")
+db = client.acordao
+
 driver = webdriver.Chrome(PATH)
 driver.get("https://scon.stj.jus.br/SCON/pesquisar.jsp")
 driver.maximize_window()
@@ -55,17 +68,21 @@ idsProcessos = driver.find_elements(By.XPATH, '//div[contains(.,"Processo") and 
 ementas = driver.find_elements(By.XPATH, '//div[contains(.,"Ementa") and @class="docTitulo"]/following-sibling::div/p')
 
 for i in range(len(relatores)):
-    print("\n")
-    print('relator: '+ relatores[i].text)
-    print('anoJulgamento: ' + str(splitYear(datasJulgamentos[i].text)))
-    print('anoPublicacao: ' + str(splitYear(datasPublicacoes[i].text)))
-    print('regiao: ' + splitRegiao(idsProcessos[i].text))
-    print('numeroProcesso: ' + splitNumeroProcesso(idsProcessos[i].text))
-    print('numeroProcessoRegiao: '+ splitNumeroProcessoRegiao(idsProcessos[i].text, splitNumeroProcesso(idsProcessos[i].text),splitRegiao(idsProcessos[i].text)))
-    print('topicos: ')
-    print(splitEmentasToTag(ementas[i].text))
-    print("\n")
+    acordao = {
+        'numeroProcesso' : splitNumeroProcesso(idsProcessos[i].text),
+        'regiao' : splitRegiao(idsProcessos[i].text),
+        'numeroProcessoRegiao': splitNumeroProcessoRegiao(idsProcessos[i].text, splitNumeroProcesso(idsProcessos[i].text),splitRegiao(idsProcessos[i].text)),
+        'relator': splitNome(relatores[i].text),
+        'anoJulgamento' : str(splitYear(datasJulgamentos[i].text)),
+        'anoPublicacao' : str(splitYear(datasPublicacoes[i].text)),
+        'tipoProcesso' : splitTipoProcesso(idsProcessos[i].text),
+        'topicos' : splitEmentasToTag(ementas[i].text)
 
+    }
+    result=db.reviews.insert_one(acordao)
+    print('Criado {0} de 10 como {1}'.format(i,result.inserted_id))
+
+print('fainalizado criados 10 acordaos')
 driver.close()
 
 

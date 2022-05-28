@@ -1,9 +1,8 @@
 import re
 from datetime import datetime
 
-str = "DJe 12/01/2022"
-b = re.findall(r"\d\d/\d\d/\d\d\d\d",str)
+str = "Ministro GURGEL DE FARIA (1160)"
 
-c = datetime.strptime(b[0], '%d/%m/%Y')
+b = re.findall(r"([a-zA-Z\s]+)",str)
 
-print(c.year)
+print(b)
