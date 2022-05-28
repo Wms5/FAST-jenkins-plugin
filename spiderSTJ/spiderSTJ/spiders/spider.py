@@ -47,8 +47,6 @@ class SpiderSpider(scrapy.Spider):
         for relator in relatores:
             yield{relator.text}
         print("\n fim relatores\n")
-            #response = scrapy.Request(driver.current_url)
-            #yield scrapy.Request("https://www.imdb.com/chart/boxoffice/?ref_=nv_ch_cht", callback=self.parse)
         driver.close()
 
     def parse(self, response):
