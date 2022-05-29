@@ -37,7 +37,7 @@ def splitTipoProcesso(str):
     return b[1]
 
 def splitNome(str):
-    c = re.findall(r"([a-zA-Z\s]+)",str)
+    c = re.findall(r"([a-zA-Z\sáàâãéèêíïóôõöúçñÁÀÂÃÉÈÊÍÏÓÒÖÚÇÑ]+)",str)
     return c[0]
 
 PATH = "C:/Users/wilki/TG/chromedriver.exe"
@@ -61,28 +61,34 @@ span_orgaoJulgador.click()
 span_primeiraTurma.click()
 btn_buscar.click()
 
-relatores = driver.find_elements(By.XPATH, '//div[contains(.,"Relator") and @class="docTitulo"]/following-sibling::div/pre')
-datasJulgamentos = driver.find_elements(By.XPATH, '//div[contains(.,"Data do Julgamento") and @class="docTitulo"]/following-sibling::div/pre')
-datasPublicacoes = driver.find_elements(By.XPATH, '//div[contains(.,"Data da Publicação/Fonte") and @class="docTitulo"]/following-sibling::div/pre')
-idsProcessos = driver.find_elements(By.XPATH, '//div[contains(.,"Processo") and @class="docTitulo"]/following-sibling::div')
-ementas = driver.find_elements(By.XPATH, '//div[contains(.,"Ementa") and @class="docTitulo"]/following-sibling::div/p')
 
-for i in range(len(relatores)):
-    acordao = {
-        'numeroProcesso' : splitNumeroProcesso(idsProcessos[i].text),
-        'regiao' : splitRegiao(idsProcessos[i].text),
-        'numeroProcessoRegiao': splitNumeroProcessoRegiao(idsProcessos[i].text, splitNumeroProcesso(idsProcessos[i].text),splitRegiao(idsProcessos[i].text)),
-        'relator': splitNome(relatores[i].text),
-        'anoJulgamento' : str(splitYear(datasJulgamentos[i].text)),
-        'anoPublicacao' : str(splitYear(datasPublicacoes[i].text)),
-        'tipoProcesso' : splitTipoProcesso(idsProcessos[i].text),
-        'topicos' : splitEmentasToTag(ementas[i].text)
 
-    }
-    result=db.reviews.insert_one(acordao)
-    print('Criado {0} de 10 como {1}'.format(i,result.inserted_id))
+for j in range(10000):
+    relatores = driver.find_elements(By.XPATH, '//div[contains(.,"Relator") and @class="docTitulo"]/following-sibling::div/pre')
+    datasJulgamentos = driver.find_elements(By.XPATH, '//div[contains(.,"Data do Julgamento") and @class="docTitulo"]/following-sibling::div/pre')
+    datasPublicacoes = driver.find_elements(By.XPATH, '//div[contains(.,"Data da Publicação/Fonte") and @class="docTitulo"]/following-sibling::div/pre')
+    idsProcessos = driver.find_elements(By.XPATH, '//div[contains(.,"Processo") and @class="docTitulo"]/following-sibling::div')
+    ementas = driver.find_elements(By.XPATH, '//div[contains(.,"Ementa") and @class="docTitulo"]/following-sibling::div/p')
+    btn_proximaPagina = driver.find_element(By.XPATH, '(//a[@data-bs-original-title="Próxima página"])[1]')
 
-print('fainalizado criados 10 acordaos')
+    for i in range(len(relatores)):
+        acordao = {
+            'numeroProcesso' : splitNumeroProcesso(idsProcessos[i].text),
+            'regiao' : splitRegiao(idsProcessos[i].text),
+            'numeroProcessoRegiao': splitNumeroProcessoRegiao(idsProcessos[i].text, splitNumeroProcesso(idsProcessos[i].text),splitRegiao(idsProcessos[i].text)),
+            'relator': splitNome(relatores[i].text),
+            'anoJulgamento' : str(splitYear(datasJulgamentos[i].text)),
+            'anoPublicacao' : str(splitYear(datasPublicacoes[i].text)),
+            'tipoProcesso' : splitTipoProcesso(idsProcessos[i].text),
+            'topicos' : splitEmentasToTag(ementas[i].text)
+
+        }
+        result=db.reviews.insert_one(acordao)
+        time.sleep(1.0)
+        print('Criado {0} de 10 na página {1}'.format(i,j))
+    btn_proximaPagina.click()
+
+print('finalizado criados 100 acordaos')
 driver.close()
 
 
