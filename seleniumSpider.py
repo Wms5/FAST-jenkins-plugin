@@ -46,6 +46,7 @@ client = MongoClient("mongodb+srv://wilkinson_maciel:1234567890@cluster0.izkuog8
 db = client.acordao
 
 driver = webdriver.Chrome(PATH)
+driver.implicitly_wait(120)
 driver.get("https://scon.stj.jus.br/SCON/pesquisar.jsp")
 driver.maximize_window()
 actions = ActionChains(driver)
