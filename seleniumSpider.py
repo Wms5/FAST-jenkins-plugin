@@ -44,6 +44,7 @@ PATH = "C:/Users/wilki/TG/chromedriver.exe"
 
 client = MongoClient("mongodb+srv://wilkinson_maciel:1234567890@cluster0.izkuog8.mongodb.net/?retryWrites=true&w=majority")
 db = client.acordao
+db2 = client.topicos
 
 driver = webdriver.Chrome(PATH)
 driver.implicitly_wait(120)
@@ -82,14 +83,16 @@ for j in range(10000):
             'anoPublicacao' : str(splitYear(datasPublicacoes[i].text)),
             'tipoProcesso' : splitTipoProcesso(idsProcessos[i].text),
             'topicos' : splitEmentasToTag(ementas[i].text)
-
         }
         result=db.reviews.insert_one(acordao)
-        time.sleep(1.0)
+        time.sleep(10.0)
+        for topico in splitEmentasToTag(ementas[i].text):
+            db2.reviews.insert_one({'topico' : topico})
+            time.sleep(1.0)
         print('Criado {0} de 10 na página {1}'.format(i,j))
     btn_proximaPagina.click()
 
-print('finalizado criados 100 acordaos')
+print('finalizado')
 driver.close()
 
 
