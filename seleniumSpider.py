@@ -27,6 +27,10 @@ def splitNumeroProcessoRegiao(str,numeroProcesso,regiao):
     c = re.findall(r"{numeroProcesso} / {regiao}".format(numeroProcesso=numeroProcesso,regiao=regiao),b[0])
     return c[0]
 
+def splitIdprocesso(str):
+    b = str.split("\n")
+    return b[0]
+
 def splitYear(str):
     b = re.findall(r"\d\d/\d\d/\d\d\d\d",str)
     c = datetime.strptime(b[0], '%d/%m/%Y')
@@ -77,7 +81,7 @@ for j in range(10000):
         acordao = {
             'numeroProcesso' : splitNumeroProcesso(idsProcessos[i].text),
             'regiao' : splitRegiao(idsProcessos[i].text),
-            'numeroProcessoRegiao': splitNumeroProcessoRegiao(idsProcessos[i].text, splitNumeroProcesso(idsProcessos[i].text),splitRegiao(idsProcessos[i].text)),
+            'idProcesso': splitIdprocesso(idsProcessos[i].text),
             'relator': splitNome(relatores[i].text),
             'anoJulgamento' : str(splitYear(datasJulgamentos[i].text)),
             'anoPublicacao' : str(splitYear(datasPublicacoes[i].text)),
