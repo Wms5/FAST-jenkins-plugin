@@ -93,6 +93,8 @@ for j in range(10000):
         for topico in splitEmentasToTag(ementas[i].text):
             db2.reviews.insert_one({'topico' : topico})
             time.sleep(1.0)
+        with open('listaIDsAcordaos.txt','a') as f:  
+            f.write('{}\n'.format(splitIdprocesso(idsProcessos[i].text)))
         print('Criado {0} de 10 na página {1}'.format(i,j))
     btn_proximaPagina.click()
 
