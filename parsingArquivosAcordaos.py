@@ -34,21 +34,25 @@ btn_pesquisaAvancada.click()
 span_orgaoJulgador.click()
 span_primeiraTurma.click()
 btn_buscar.click()
-
 handles = driver.window_handles
 parent_handle = driver.current_window_handle
 
-btn_imprimir = driver.find_elements(By.XPATH, '//a[@data-bs-original-title="Exibir o documento em formato PDF para imprimir ou salvar."]')
-for i in btn_imprimir:
-    #body = driver.find_element(By.XPATH, '//body')
-    actions.move_to_element(i).perform()
-    i.click()
-    time.sleep(10.0)
-    handles = driver.window_handles
-    driver.switch_to.window(handles[1])
-    driver.close()
-    #body.send_keys(Keys.ALT + Keys.F4)
-    #body.send_keys(Keys.ENTER)
-    driver.switch_to.window(parent_handle)
-    time.sleep(10.0)
-time.sleep(10.0)
+for j in range(3):
+    btn_imprimir = driver.find_elements(By.XPATH, '//a[@data-bs-original-title="Exibir o documento em formato PDF para imprimir ou salvar."]')
+    cabecalho = driver.find_elements(By.XPATH, '//div[@class="col clsIdentificacaoDocumento"]')
+    btn_proximaPagina = driver.find_element(By.XPATH, '(//a[@data-bs-original-title="Próxima página"])[2]')
+    for i in range(len(btn_imprimir)):
+        time.sleep(3.0)
+        btn_imprimir[i].click()
+        time.sleep(10.0)
+        handles = driver.window_handles
+        driver.switch_to.window(handles[1])
+        driver.close()
+        driver.switch_to.window(parent_handle)
+        time.sleep(10.0)
+        print(i)
+        if i!=9:
+            element_location = cabecalho[i+1].location['y']
+            driver.execute_script("window.scrollTo(0,{0})".format(element_location),"")
+    time.sleep(1.0)
+    btn_proximaPagina.click()
