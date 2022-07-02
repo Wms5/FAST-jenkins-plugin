@@ -7,5 +7,7 @@
 with open("listaIDsAcordaos.txt", "r") as tf:
     lines = tf.read().split('\n')
     
+print(lines)
+
 for line in lines:
     print(line)
