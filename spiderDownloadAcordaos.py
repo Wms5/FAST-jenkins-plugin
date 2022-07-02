@@ -43,16 +43,15 @@ for j in range(3):
     btn_proximaPagina = driver.find_element(By.XPATH, '(//a[@data-bs-original-title="Próxima página"])[2]')
     for i in range(len(btn_imprimir)):
         time.sleep(3.0)
+        driver.execute_script('arguments[0].focus();', btn_imprimir[i])
+        time.sleep(3.0)
         btn_imprimir[i].click()
-        time.sleep(10.0)
+        time.sleep(3.0)
         handles = driver.window_handles
         driver.switch_to.window(handles[1])
         driver.close()
         driver.switch_to.window(parent_handle)
-        time.sleep(10.0)
-        print(i)
-        if i!=9:
-            element_location = cabecalho[i+1].location['y']
-            driver.execute_script("window.scrollTo(0,{0})".format(element_location),"")
-    time.sleep(1.0)
+        time.sleep(3.0)
+    driver.execute_script('arguments[0].focus();', btn_proximaPagina)
+    time.sleep(3.0)
     btn_proximaPagina.click()
