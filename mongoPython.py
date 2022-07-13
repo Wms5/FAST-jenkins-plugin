@@ -22,11 +22,15 @@ db2 = client.topicos
 
 
 
-for doc in db.reviews.aggregate([{"$unwind": "$topicos"},{ "$unset": "numeroProcesso"},{"$unset": "_id"},{"$unset": "regiao"},
-{"$unset": "numeroProcessoRegiao"},{"$unset": "relator"},{"$unset": "anoJulgamento"},{"$unset": "anoPublicacao"},{"$unset": "tipoProcesso"}]):
-        print(doc)
-        db2.reviews.insert_one(doc)
-        time.sleep(2.0)
+#for doc in db.reviews.aggregate([{"$unwind": "$topicos"},{ "$unset": "numeroProcesso"},{"$unset": "_id"},{"$unset": "regiao"},
+#{"$unset": "numeroProcessoRegiao"},{"$unset": "relator"},{"$unset": "anoJulgamento"},{"$unset": "anoPublicacao"},{"$unset": "tipoProcesso"}]):
+#        print(doc)
+#        db2.reviews.insert_one(doc)
+#        time.sleep(2.0)
 #result=db.reviews.insert_one(acordao)
+
+docs = db.reviews.find({'numeroProcesso':'RESP 848920-SP'},no_cursor_timeout=True)
+for doc in docs:
+        print(doc)
 
 
