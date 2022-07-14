@@ -1,4 +1,5 @@
 from pymongo import MongoClient
+import pymongo
 # pprint library is used to make the output look more pretty
 from pprint import pprint
 import json
@@ -28,8 +29,15 @@ db2 = client.topicos
 #        db2.reviews.insert_one(doc)
 #        time.sleep(2.0)
 #result=db.reviews.insert_one(acordao)
+matchList = ['8122','4567','3467']
+docs = db.reviews.find({'numeroProcesso': '1333113'})
+for doc in docs:
+        print(doc)
 
-docs = db.reviews.find({'numeroProcesso':'RESP 848920-SP'},no_cursor_timeout=True)
+matchList.pop(0)
+db.reviews.update_one({'numeroProcesso': '1333113'},{'$set':{'refererecias':matchList}})
+
+docs = db.reviews.find({'numeroProcesso': '1333113'})
 for doc in docs:
         print(doc)
 
