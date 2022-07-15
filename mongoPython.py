@@ -9,6 +9,7 @@ client = MongoClient("mongodb+srv://wilkinson_maciel:1234567890@cluster0.izkuog8
 
 db = client.acordao
 db2 = client.topicos
+db3 = client.referencias
 # acordao = {
 #         'id' : "0984545",
 #         'relator' : "Amara Maria",
@@ -29,15 +30,20 @@ db2 = client.topicos
 #        db2.reviews.insert_one(doc)
 #        time.sleep(2.0)
 #result=db.reviews.insert_one(acordao)
-matchList = ['8122','4567','3467']
-docs = db.reviews.find({'numeroProcesso': '1333113'})
+matchList = ['AgInt no AREsp 1978175 / SP','AgInt no AREsp 1333113 / RJ','AgInt no AREsp 1981305 / SP', 'AgInt no AREsp 1865094 / MG']
+docs = db.reviews.find({'idProcesso': matchList[0]})
+
 for doc in docs:
         print(doc)
 
-matchList.pop(0)
-db.reviews.update_one({'numeroProcesso': '1333113'},{'$set':{'refererecias':matchList}})
+idAcordao = matchList.pop(0)
+print(idAcordao)
 
-docs = db.reviews.find({'numeroProcesso': '1333113'})
+db.reviews.update_one({'idProcesso': idAcordao},{'$set':{'refererecias':matchList}})
+for element in matchList:
+        db3.reviews.insert_one({'referencia':element})
+
+docs = db.reviews.find({'idProcesso': idAcordao})
 for doc in docs:
         print(doc)
 

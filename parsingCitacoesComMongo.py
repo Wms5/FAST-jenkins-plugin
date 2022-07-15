@@ -17,6 +17,7 @@ client = MongoClient("mongodb+srv://wilkinson_maciel:1234567890@cluster0.izkuog8
 
 db = client.acordao
 db2 = client.topicos
+db3 = client.referencias
 
 with open("listaIDsAcordaos.txt", "r") as tf:
     listIDAcordao = tf.read().split('\n')
@@ -40,5 +41,8 @@ for file in files:
                 print(text.rfind(listIDAcordao[j]))
                 print(listIDAcordao[j])
                 matchList.append(listIDAcordao[j])
-    db.reviews.update_one({'numeroProcesso': '1333113'},{'$set':{'refererecias':matchList}})
+    idAcordao = matchList.pop(0)
+    db.reviews.update_one({'idProcesso': idAcordao},{'$set':{'refererecias':matchList}})
+    for element in matchList:
+        db3.reviews.insert_one({'referencia':element})
     os.remove(str(PATH+file))
