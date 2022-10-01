@@ -6,6 +6,7 @@ import time
 import re
 from datetime import datetime
 from pymongo import MongoClient
+import math
 
 def splitEmentasToTag(str):
     b = str.split("\n")
@@ -44,7 +45,7 @@ def splitNome(str):
     c = re.findall(r"([a-zA-Z\sáàâãéèêíïóôõöúçñÁÀÂÃÉÈÊÍÏÓÒÖÚÇÑ]+)",str)
     return c[0]
 
-PATH = "C:/Users/wilki/TG/chromedriver.exe"
+PATH = "chromedriver.exe"
 
 client = MongoClient("mongodb+srv://wilkinson_maciel:1234567890@cluster0.izkuog8.mongodb.net/?retryWrites=true&w=majority")
 db = client.acordao
@@ -55,21 +56,23 @@ driver.implicitly_wait(120)
 driver.get("https://scon.stj.jus.br/SCON/pesquisar.jsp")
 driver.maximize_window()
 actions = ActionChains(driver)
-
-html = driver.find_element_by_tag_name('html')
 btn_pesquisaAvancada = driver.find_element(By.XPATH, '//button[@id="idMostrarPesquisaAvancada"]')
+
 span_orgaoJulgador = driver.find_element(By.XPATH, '//span[@id="spanNomesOrgaos"]')
 span_primeiraTurma = driver.find_element(By.XPATH, '//span[.="PRIMEIRA TURMA"]')
 btn_buscar = driver.find_element(By.XPATH, '//button[@data-bs-original-title="Pesquisar"]')
 
+
 btn_pesquisaAvancada.click()
+time.sleep(5)
 span_orgaoJulgador.click()
+time.sleep(5)
 span_primeiraTurma.click()
-btn_buscar.click()
+time.sleep(10)
+##btn_buscar.click()
+##time.sleep(5)
 
-
-
-for j in range(10000):
+for j in range(10429):
     relatores = driver.find_elements(By.XPATH, '//div[contains(.,"Relator") and @class="docTitulo"]/following-sibling::div/pre')
     datasJulgamentos = driver.find_elements(By.XPATH, '//div[contains(.,"Data do Julgamento") and @class="docTitulo"]/following-sibling::div/pre')
     datasPublicacoes = driver.find_elements(By.XPATH, '//div[contains(.,"Data da Publicação/Fonte") and @class="docTitulo"]/following-sibling::div/pre')
@@ -89,7 +92,7 @@ for j in range(10000):
             'topicos' : splitEmentasToTag(ementas[i].text)
         }
         result=db.reviews.insert_one(acordao)
-        time.sleep(10.0)
+        time.sleep(3.0)
         for topico in splitEmentasToTag(ementas[i].text):
             db2.reviews.insert_one({'topico' : topico})
             time.sleep(1.0)
