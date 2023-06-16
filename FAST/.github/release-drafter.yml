@@ -1,0 +1,2 @@
+_extends: .github
+tag-template: FAST-$NEXT_MINOR_VERSION
