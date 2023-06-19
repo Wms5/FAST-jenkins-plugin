@@ -10,7 +10,10 @@ import hudson.model.TaskListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import hudson.util.FormValidation;
+
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import javax.servlet.ServletException;
 import jenkins.tasks.SimpleBuildStep;
 import org.jenkinsci.Symbol;
@@ -42,11 +45,35 @@ public class HelloWorldBuilder extends Builder implements SimpleBuildStep {
     public void perform(Run<?, ?> run, FilePath workspace, EnvVars env, Launcher launcher, TaskListener listener) throws InterruptedException, IOException {
         listener.getLogger().println("String do repositorio: " + repositorio);
         listener.getLogger().println("Valor check: " + check);
-        String name = "Wil";
-        listener.getLogger().println(name);
-        try(PythonInterpreter pyInterp = new PythonInterpreter()) {
-            pyInterp.exec("print('Hello Python World!')");
-            pyInterp.execfile("C:/Users/user/Desktop/plugin/FAST/src/main/resources/FAST/py/prioritize.py");
+        try {
+            // Caminho para o executável Python
+            String pythonExecutable = "python";
+
+            // Caminho para o arquivo Python a ser executado
+            String pythonScript = "C:\\Users\\user\\Desktop\\plugin\\FAST\\src\\main\\resources\\hello.py";
+
+            // Parâmetros do script Python
+            String param1 = "valor1";
+
+            // Comando completo a ser executado
+            String command = pythonExecutable + " " + pythonScript + " " + param1;
+
+            // Criação do processo
+            ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
+            Process process = processBuilder.start();
+
+            // Leitura da saída do processo
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                listener.getLogger().println(line);
+            }
+
+            // Aguarda a finalização do processo
+            int exitCode = process.waitFor();
+
+        }catch (IOException | InterruptedException e){
+            e.printStackTrace();
         }
 
     }
@@ -57,13 +84,13 @@ public class HelloWorldBuilder extends Builder implements SimpleBuildStep {
 
         public FormValidation doCheckName(@QueryParameter String value) throws IOException, ServletException {
             if (value.length() == 0){
-                return FormValidation.error("Insira um endereço git");
+                return FormValidation.error("Insira o parametro 1");
             }
-            if (!value.matches("((http|git|ssh|http(s)|file|\\/?)|"
+            /*if (!value.matches("((http|git|ssh|http(s)|file|\\/?)|"
                     + "(git@[\\w\\.]+))(:(\\/\\/)?)"
                     + "([\\w\\.@\\:/\\-~]+)(\\.git)(\\/)?")) {
                 return FormValidation.warning("Endereço git errado. Insira novamente");
-            }
+            }*/
             return FormValidation.ok();
         }
 
