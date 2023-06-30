@@ -52,8 +52,9 @@ public class HelloWorldBuilder extends Builder implements SimpleBuildStep {
         try {
             // Caminho para o executável Python
             String pythonExecutable = "python";
-            String pythonScript = "C:\\Users\\user\\Desktop\\TG\\FAST\\src\\main\\resources\\hello.py";
-            String command = pythonExecutable + " " + pythonScript + " " + name;
+            String pythonScript = "C:\\Users\\user\\Desktop\\PacoteReplicacao\\maven-FAST\\py\\prioritize.py";
+            String command = pythonExecutable + " " + pythonScript + " " + name + " "+"FAST-pw";
+            listener.getLogger().println("comando:" + command);
             ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
             Process process = processBuilder.start();
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
