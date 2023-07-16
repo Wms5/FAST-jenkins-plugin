@@ -48,11 +48,10 @@ public class HelloWorldBuilder extends Builder implements SimpleBuildStep {
     public void perform(Run<?, ?> run, FilePath workspace, EnvVars env, Launcher launcher, TaskListener listener)
             throws InterruptedException, IOException {
         listener.getLogger().println("String do repositorio: " + name);
-        listener.getLogger().println("Valor check: " + useFrench);
         try {
             // Caminho para o executável Python
             String pythonExecutable = "python";
-            String pythonScript = "C:\\Users\\user\\Desktop\\PacoteReplicacao\\maven-FAST\\py\\prioritize.py";
+            String pythonScript = "C:\\Users\\user\\Desktop\\PacoteReplicacao\\maven-FAST-update\\py\\prioritize.py";
             String command = pythonExecutable + " " + pythonScript + " " + name + " "+"FAST-pw";
             listener.getLogger().println("comando:" + command);
             ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
