@@ -12,6 +12,7 @@ import hudson.tasks.Builder;
 import hudson.util.FormValidation;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import javax.servlet.ServletException;
@@ -21,11 +22,16 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 
+import org.eclipse.jgit.api.*;
+
 public class HelloWorldBuilder extends Builder implements SimpleBuildStep {
 
     private final String name;
     private final String algorithm;
     private boolean useFrench;
+
+    private final String repositoryUrl = "https://github.com/FAST-tool/maven-FAST.git";
+    private final String destinationFolder = "src/main/resources/fast";
 
     @DataBoundConstructor
     public HelloWorldBuilder(String name,String algorithm ) {
@@ -49,16 +55,34 @@ public class HelloWorldBuilder extends Builder implements SimpleBuildStep {
         this.useFrench = useFrench;
     }
 
+    public static void cloneRepository(String repositoryUrl, String destinationFolder) {
+        try {
+            CloneCommand cloneCommand = Git.cloneRepository()
+                    .setURI(repositoryUrl)
+                    .setDirectory(new File(destinationFolder));
+            Git git = cloneCommand.call();
+            git.close();
+
+            System.out.println("Repositório clonado com sucesso em: " + destinationFolder);
+        } catch (Exception e) {
+            System.err.println("Erro ao clonar o repositório: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void perform(Run<?, ?> run, FilePath workspace, EnvVars env, Launcher launcher, TaskListener listener)
             throws InterruptedException, IOException {
         listener.getLogger().println("String do repositorio: " + name);
         listener.getLogger().println("String do algorimto: " + this.algorithm);
+        listener.getLogger().println("String do algorimto: " + System.getProperty("user.dir"));
         try {
+            //clone do maven-fast
+            cloneRepository(this.repositoryUrl,this.destinationFolder);
             // Caminho para o executável Python
             String pythonExecutable = "python";
-            String pythonScript = "C:\\Users\\user\\Desktop\\PacoteReplicacao\\maven-FAST-update\\py\\prioritize.py";
-            String command = pythonExecutable + " " + pythonScript + " " + name + " "+"FAST-pw";
+            String pythonScript = "C:\\Users\\user\\Desktop\\TG\\FAST\\src\\main\\resources\\fast\\py\\prioritize.py";
+            String command = pythonExecutable + " " + pythonScript + " " + name + " "+this.algorithm;
             listener.getLogger().println("comando:" + command);
             ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
             Process process = processBuilder.start();
