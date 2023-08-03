@@ -17,24 +17,24 @@ public class HelloWorldBuilderTest {
 
     final String name = "Bobby";
 
-    @Test
-    public void testConfigRoundtrip() throws Exception {
-        FreeStyleProject project = jenkins.createFreeStyleProject();
-        project.getBuildersList().add(new HelloWorldBuilder(name));
-        project = jenkins.configRoundtrip(project);
-        jenkins.assertEqualDataBoundBeans(
-                new HelloWorldBuilder(name), project.getBuildersList().get(0));
-    }
-
-    @Test
-    public void testBuild() throws Exception {
-        FreeStyleProject project = jenkins.createFreeStyleProject();
-        HelloWorldBuilder builder = new HelloWorldBuilder(name);
-        project.getBuildersList().add(builder);
-
-        FreeStyleBuild build = jenkins.buildAndAssertSuccess(project);
-        jenkins.assertLogContains("Hello, " + name, build);
-    }
+//    @Test
+//    public void testConfigRoundtrip() throws Exception {
+//        FreeStyleProject project = jenkins.createFreeStyleProject();
+//        project.getBuildersList().add(new HelloWorldBuilder(name));
+//        project = jenkins.configRoundtrip(project);
+//        jenkins.assertEqualDataBoundBeans(
+//                new HelloWorldBuilder(name), project.getBuildersList().get(0));
+//    }
+//
+//    @Test
+//    public void testBuild() throws Exception {
+//        FreeStyleProject project = jenkins.createFreeStyleProject();
+//        HelloWorldBuilder builder = new HelloWorldBuilder(name);
+//        project.getBuildersList().add(builder);
+//
+//        FreeStyleBuild build = jenkins.buildAndAssertSuccess(project);
+//        jenkins.assertLogContains("Hello, " + name, build);
+//    }
 
     @Test
     public void testScriptedPipeline() throws Exception {

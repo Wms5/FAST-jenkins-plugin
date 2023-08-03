@@ -24,15 +24,20 @@ import org.kohsuke.stapler.QueryParameter;
 public class HelloWorldBuilder extends Builder implements SimpleBuildStep {
 
     private final String name;
+    private final String algorithm;
     private boolean useFrench;
 
     @DataBoundConstructor
-    public HelloWorldBuilder(String name) {
+    public HelloWorldBuilder(String name,String algorithm ) {
         this.name = name;
+        this.algorithm = algorithm;
     }
 
     public String getName() {
         return name;
+    }
+    public String getAlgorithm() {
+        return algorithm;
     }
 
     public boolean isUseFrench() {
@@ -48,6 +53,7 @@ public class HelloWorldBuilder extends Builder implements SimpleBuildStep {
     public void perform(Run<?, ?> run, FilePath workspace, EnvVars env, Launcher launcher, TaskListener listener)
             throws InterruptedException, IOException {
         listener.getLogger().println("String do repositorio: " + name);
+        listener.getLogger().println("String do algorimto: " + this.algorithm);
         try {
             // Caminho para o executável Python
             String pythonExecutable = "python";
@@ -72,14 +78,14 @@ public class HelloWorldBuilder extends Builder implements SimpleBuildStep {
     @Extension
     public static final class DescriptorImpl extends BuildStepDescriptor<Builder> {
 
-        public FormValidation doCheckName(@QueryParameter String value, @QueryParameter boolean useFrench)
+        public FormValidation doCheckName(@QueryParameter String value, @QueryParameter boolean useFrench,@QueryParameter String algorithm)
                 throws IOException, ServletException {
-            if (value.length() == 0)
-                return FormValidation.error("a");
-            if (value.length() < 4)
-                return FormValidation.warning("b");
-            if (!useFrench && value.matches(".*[éáàç].*")) {
-                return FormValidation.warning("c");
+            if (value.length() == 0){
+                return FormValidation.error("O campo de Name não pode ser vazio.");
+            }
+
+            if (algorithm == null || algorithm.trim().isEmpty()) {
+                return FormValidation.error("O campo de algorithm não pode ser vazio.");
             }
             return FormValidation.ok();
         }
