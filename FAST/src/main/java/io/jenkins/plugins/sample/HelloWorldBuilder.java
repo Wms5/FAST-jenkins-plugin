@@ -23,6 +23,11 @@ import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 
 import org.eclipse.jgit.api.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class HelloWorldBuilder extends Builder implements SimpleBuildStep {
 
@@ -30,7 +35,7 @@ public class HelloWorldBuilder extends Builder implements SimpleBuildStep {
     private final String algorithm;
     private boolean useFrench;
 
-    private final String repositoryUrl = "https://github.com/FAST-tool/maven-FAST.git";
+    private final String repositoryUrl = "https://github.com/Wms5/maven-FAST-update.git";
     private final String destinationFolder = "src/main/resources/fast";
 
     @DataBoundConstructor
@@ -64,26 +69,56 @@ public class HelloWorldBuilder extends Builder implements SimpleBuildStep {
             git.close();
 
             System.out.println("Repositório clonado com sucesso em: " + destinationFolder);
+
         } catch (Exception e) {
             System.err.println("Erro ao clonar o repositório: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
+    public static void executePipInstall(String requirementsFilePath) {
+        try {
+            Path path = Paths.get(requirementsFilePath);
+            String absolutePath = path.toAbsolutePath().toString();
+
+            ProcessBuilder processBuilder = new ProcessBuilder("pip install -r " + absolutePath);
+            processBuilder.redirectErrorStream(true);
+            Process process = processBuilder.start();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+            }
+
+            int exitCode = process.waitFor();
+            if (exitCode == 0) {
+                System.out.println("Instalação concluída com sucesso.");
+            } else {
+                System.err.println("Erro ao executar o comando pip install. Código de saída: " + exitCode);
+            }
+        } catch (IOException | InterruptedException e) {
+            System.err.println("Erro ao executar o comando pip install: " + e.getMessage());
+        }
+    }
+
     @Override
     public void perform(Run<?, ?> run, FilePath workspace, EnvVars env, Launcher launcher, TaskListener listener)
             throws InterruptedException, IOException {
-        listener.getLogger().println("String do repositorio: " + name);
-        listener.getLogger().println("String do algorimto: " + this.algorithm);
-        listener.getLogger().println("String do algorimto: " + System.getProperty("user.dir"));
+        listener.getLogger().println("String do repositorio alvo: " + name);
+        listener.getLogger().println("String do algoritmo: " + algorithm);
+        listener.getLogger().println("String do repositorio do plugin: " + System.getProperty("user.dir"));
         try {
             //clone do maven-fast
             cloneRepository(this.repositoryUrl,this.destinationFolder);
+            //intall requirements
+            executePipInstall("/home/wilkinson/Desktop/TG/FAST/src/main/resources/fast/requirements.txt");
             // Caminho para o executável Python
-            String pythonExecutable = "python";
-            String pythonScript = "C:\\Users\\user\\Desktop\\TG\\FAST\\src\\main\\resources\\fast\\py\\prioritize.py";
-            String command = pythonExecutable + " " + pythonScript + " " + name + " "+this.algorithm;
+            String pythonExecutable = "python3";
+            String pythonScript = System.getProperty("user.dir")+"/src/main/resources/fast/py/prioritize.py";
+            String command = pythonExecutable + " " + pythonScript + " " + name + " "+  algorithm;
             listener.getLogger().println("comando:" + command);
+            //
             ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
             Process process = processBuilder.start();
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
