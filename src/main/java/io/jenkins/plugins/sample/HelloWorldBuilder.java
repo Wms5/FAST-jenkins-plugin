@@ -33,27 +33,16 @@ import java.nio.file.Paths;
 public class HelloWorldBuilder extends Builder implements SimpleBuildStep {
 
     private final String name;
-    private boolean useFrench;
-
     private final String repositoryUrl = "https://github.com/DinoSaulo/maven-FAST.git";
     private final String destinationFolder = "src/main/resources/fast";
 
     @DataBoundConstructor
-    public HelloWorldBuilder(String name,String algorithm ) {
+    public HelloWorldBuilder(String name) {
         this.name = name;
     }
 
     public String getName() {
         return name;
-    }
-
-    public boolean isUseFrench() {
-        return useFrench;
-    }
-
-    @DataBoundSetter
-    public void setUseFrench(boolean useFrench) {
-        this.useFrench = useFrench;
     }
 
     public static void cloneRepository(String repositoryUrl, String destinationFolder) {
@@ -130,7 +119,7 @@ public class HelloWorldBuilder extends Builder implements SimpleBuildStep {
     @Extension
     public static final class DescriptorImpl extends BuildStepDescriptor<Builder> {
 
-        public FormValidation doCheckName(@QueryParameter String value, @QueryParameter boolean useFrench)
+        public FormValidation doCheckName(@QueryParameter String value)
                 throws IOException, ServletException {
             if (value.isEmpty()){
                 return FormValidation.error("Choose among the following options: FAST-pw, FAST-one, FAST-log, FAST-sqrt and FAST-all.");
