@@ -5,6 +5,7 @@ import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractProject;
+import hudson.model.AbstractBuild;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.tasks.BuildStepDescriptor;
@@ -81,7 +82,7 @@ public class HelloWorldBuilder extends Builder implements SimpleBuildStep {
             Path path = Paths.get(requirementsFilePath);
             String absolutePath = path.toAbsolutePath().toString();
 
-            ProcessBuilder processBuilder = new ProcessBuilder("pip install -r " + absolutePath);
+            ProcessBuilder processBuilder = new ProcessBuilder("pip3 install -r " + absolutePath);
             processBuilder.redirectErrorStream(true);
             Process process = processBuilder.start();
 
@@ -107,7 +108,8 @@ public class HelloWorldBuilder extends Builder implements SimpleBuildStep {
             throws InterruptedException, IOException {
         listener.getLogger().println("String do repositorio alvo: " + name);
         listener.getLogger().println("String do algoritmo: " + algorithm);
-        listener.getLogger().println("String do repositorio do plugin: " + System.getProperty("user.dir"));
+        listener.getLogger().println("Valor da variável WORKSPACE: " + workspace.absolutize());
+
         try {
             //clone do maven-fast
             cloneRepository(this.repositoryUrl,this.destinationFolder);
@@ -116,7 +118,7 @@ public class HelloWorldBuilder extends Builder implements SimpleBuildStep {
             // Caminho para o executável Python
             String pythonExecutable = "python3";
             String pythonScript = System.getProperty("user.dir")+"/src/main/resources/fast/py/prioritize.py";
-            String command = pythonExecutable + " " + pythonScript + " " + name + " "+  algorithm;
+            String command = pythonExecutable + " " + pythonScript + " " + workspace.absolutize() + " "+  algorithm;
             listener.getLogger().println("comando:" + command);
             //
             ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
