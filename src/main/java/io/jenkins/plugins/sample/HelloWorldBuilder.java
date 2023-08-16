@@ -30,6 +30,7 @@ import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+
 public class HelloWorldBuilder extends Builder implements SimpleBuildStep {
 
     private final String name;
@@ -92,6 +93,9 @@ public class HelloWorldBuilder extends Builder implements SimpleBuildStep {
             throws InterruptedException, IOException {
         listener.getLogger().println("Picked algorithm: " + name);
         listener.getLogger().println("WORKSPACE path: " + workspace.absolutize());
+        listener.getLogger().println("pom path: " + workspace.absolutize()+"/pom.xml");
+        DependencyInjector di = new DependencyInjector(workspace.absolutize()+"/pom.xml");
+        di.run();
 
         try {
             cloneRepository(this.repositoryUrl,this.destinationFolder);
@@ -109,6 +113,7 @@ public class HelloWorldBuilder extends Builder implements SimpleBuildStep {
                 listener.getLogger().println(line);
             }
             process.waitFor();
+
         }catch (IOException | InterruptedException e){
             e.printStackTrace();
         }

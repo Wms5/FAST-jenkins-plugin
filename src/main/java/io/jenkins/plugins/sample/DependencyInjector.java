@@ -1,4 +1,4 @@
-package org.example;
+package io.jenkins.plugins.sample;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -27,6 +27,12 @@ import java.util.List;
 import java.util.Scanner;
 
 public class DependencyInjector {
+
+    private String path;
+
+    DependencyInjector(String path){
+        this.path=path;
+    }
     public static void writeInXMLFile(Document doc, File inputFile){
         try {
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -176,9 +182,9 @@ public class DependencyInjector {
         }
 
     }
-    public static void main(String[] args) {
+    public void run() {
         try {
-            File inputFile = new File("C:\\Injecao-dependencias-poc\\src\\main\\resources\\pom.xml");
+            File inputFile = new File(this.path);
 
             insertBuildconfig(inputFile);
             insertDependenciesConfig(inputFile);
