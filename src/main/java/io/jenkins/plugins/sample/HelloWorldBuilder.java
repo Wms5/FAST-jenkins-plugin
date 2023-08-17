@@ -48,6 +48,11 @@ public class HelloWorldBuilder extends Builder implements SimpleBuildStep {
 
     public static void cloneRepository(String repositoryUrl, String destinationFolder) {
         try {
+            File destinationDir = new File(destinationFolder);
+            if (destinationDir.exists()) {
+                System.out.println("Diretório existente");
+                return;
+            }
             CloneCommand cloneCommand = Git.cloneRepository()
                     .setURI(repositoryUrl)
                     .setDirectory(new File(destinationFolder));
@@ -74,7 +79,7 @@ public class HelloWorldBuilder extends Builder implements SimpleBuildStep {
             while ((line = reader.readLine()) != null) {
                 System.out.println(line);
             }
-            
+
             int exitCode = process.waitFor();
 
             if (exitCode == 0) {
