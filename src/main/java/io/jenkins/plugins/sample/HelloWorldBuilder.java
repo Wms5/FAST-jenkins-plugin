@@ -63,28 +63,27 @@ public class HelloWorldBuilder extends Builder implements SimpleBuildStep {
     }
 
     public static void executePipInstall(String requirementsFilePath) {
+        Path path = Paths.get(requirementsFilePath);
+        String absolutePath = path.toAbsolutePath().toString();
+        String command = "pip3 install -r " + absolutePath;
         try {
-            Path path = Paths.get(requirementsFilePath);
-            String absolutePath = path.toAbsolutePath().toString();
-
-            ProcessBuilder processBuilder = new ProcessBuilder("pip3 install -r " + absolutePath);
-            processBuilder.redirectErrorStream(true);
-            Process process = processBuilder.start();
+            Process process = Runtime.getRuntime().exec(command);
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String line;
             while ((line = reader.readLine()) != null) {
                 System.out.println(line);
             }
-
+            
             int exitCode = process.waitFor();
+
             if (exitCode == 0) {
-                System.out.println("Instalação concluída com sucesso.");
+                System.out.println("Comando concluído com sucesso.");
             } else {
-                System.err.println("Erro ao executar o comando pip install. Código de saída: " + exitCode);
+                System.out.println("O comando retornou um código de saída diferente de zero.");
             }
         } catch (IOException | InterruptedException e) {
-            System.err.println("Erro ao executar o comando pip install: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -99,7 +98,7 @@ public class HelloWorldBuilder extends Builder implements SimpleBuildStep {
 
         try {
             cloneRepository(this.repositoryUrl,this.destinationFolder);
-            executePipInstall("/home/wilkinson/Desktop/TG/FAST/src/main/resources/fast/requirements.txt");
+            executePipInstall(System.getProperty("user.dir")+"/src/main/resources/fast/requirements.txt");
             String pythonExecutable = "python3";
             String pythonScript = System.getProperty("user.dir")+"/src/main/resources/fast/py/prioritize.py";
             String command = pythonExecutable + " " + pythonScript + " " + workspace.absolutize() + " "+  name;
