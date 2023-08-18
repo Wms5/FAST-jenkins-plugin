@@ -25,7 +25,7 @@ In order to replicate the project follow these steps:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/Wms5/TG.git
+   git clone https://github.com/Wms5/FAST-maven-jenkins-plugin.git
    ```
 2. Open the repository where the FAST-maven-jenkins-plugin repository was cloned:
 	```bash
