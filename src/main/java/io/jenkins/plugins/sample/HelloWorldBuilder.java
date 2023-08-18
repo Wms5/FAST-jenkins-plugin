@@ -30,39 +30,29 @@ import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+
 public class HelloWorldBuilder extends Builder implements SimpleBuildStep {
 
     private final String name;
-    private final String algorithm;
-    private boolean useFrench;
-
     private final String repositoryUrl = "https://github.com/DinoSaulo/maven-FAST.git";
     private final String destinationFolder = "src/main/resources/fast";
 
     @DataBoundConstructor
-    public HelloWorldBuilder(String name,String algorithm ) {
+    public HelloWorldBuilder(String name) {
         this.name = name;
-        this.algorithm = algorithm;
     }
 
     public String getName() {
         return name;
     }
-    public String getAlgorithm() {
-        return algorithm;
-    }
-
-    public boolean isUseFrench() {
-        return useFrench;
-    }
-
-    @DataBoundSetter
-    public void setUseFrench(boolean useFrench) {
-        this.useFrench = useFrench;
-    }
 
     public static void cloneRepository(String repositoryUrl, String destinationFolder) {
         try {
+            File destinationDir = new File(destinationFolder);
+            if (destinationDir.exists()) {
+                System.out.println("Diretório existente");
+                return;
+            }
             CloneCommand cloneCommand = Git.cloneRepository()
                     .setURI(repositoryUrl)
                     .setDirectory(new File(destinationFolder));
@@ -78,13 +68,11 @@ public class HelloWorldBuilder extends Builder implements SimpleBuildStep {
     }
 
     public static void executePipInstall(String requirementsFilePath) {
+        Path path = Paths.get(requirementsFilePath);
+        String absolutePath = path.toAbsolutePath().toString();
+        String command = "pip3 install -r " + absolutePath;
         try {
-            Path path = Paths.get(requirementsFilePath);
-            String absolutePath = path.toAbsolutePath().toString();
-
-            ProcessBuilder processBuilder = new ProcessBuilder("pip3 install -r " + absolutePath);
-            processBuilder.redirectErrorStream(true);
-            Process process = processBuilder.start();
+            Process process = Runtime.getRuntime().exec(command);
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String line;
@@ -93,34 +81,34 @@ public class HelloWorldBuilder extends Builder implements SimpleBuildStep {
             }
 
             int exitCode = process.waitFor();
+
             if (exitCode == 0) {
-                System.out.println("Instalação concluída com sucesso.");
+                System.out.println("Comando concluído com sucesso.");
             } else {
-                System.err.println("Erro ao executar o comando pip install. Código de saída: " + exitCode);
+                System.out.println("O comando retornou um código de saída diferente de zero.");
             }
         } catch (IOException | InterruptedException e) {
-            System.err.println("Erro ao executar o comando pip install: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
     @Override
     public void perform(Run<?, ?> run, FilePath workspace, EnvVars env, Launcher launcher, TaskListener listener)
             throws InterruptedException, IOException {
-        listener.getLogger().println("String do repositorio alvo: " + name);
-        listener.getLogger().println("String do algoritmo: " + algorithm);
-        listener.getLogger().println("Valor da variável WORKSPACE: " + workspace.absolutize());
+        listener.getLogger().println("Picked algorithm: " + name);
+        listener.getLogger().println("WORKSPACE path: " + workspace.absolutize());
+        listener.getLogger().println("pom path: " + workspace.absolutize()+"/pom.xml");
+        DependencyInjector di = new DependencyInjector(workspace.absolutize()+"/pom.xml");
+        di.run();
 
         try {
-            //clone do maven-fast
             cloneRepository(this.repositoryUrl,this.destinationFolder);
-            //intall requirements
-            executePipInstall("/home/wilkinson/Desktop/TG/FAST/src/main/resources/fast/requirements.txt");
-            // Caminho para o executável Python
+            executePipInstall(System.getProperty("user.dir")+"/src/main/resources/fast/requirements.txt");
             String pythonExecutable = "python3";
             String pythonScript = System.getProperty("user.dir")+"/src/main/resources/fast/py/prioritize.py";
-            String command = pythonExecutable + " " + pythonScript + " " + workspace.absolutize() + " "+  algorithm;
-            listener.getLogger().println("comando:" + command);
-            //
+            String command = pythonExecutable + " " + pythonScript + " " + workspace.absolutize() + " "+  name;
+            listener.getLogger().println("command:" + command);
+
             ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
             Process process = processBuilder.start();
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
@@ -129,6 +117,7 @@ public class HelloWorldBuilder extends Builder implements SimpleBuildStep {
                 listener.getLogger().println(line);
             }
             process.waitFor();
+
         }catch (IOException | InterruptedException e){
             e.printStackTrace();
         }
@@ -139,14 +128,10 @@ public class HelloWorldBuilder extends Builder implements SimpleBuildStep {
     @Extension
     public static final class DescriptorImpl extends BuildStepDescriptor<Builder> {
 
-        public FormValidation doCheckName(@QueryParameter String value, @QueryParameter boolean useFrench,@QueryParameter String algorithm)
+        public FormValidation doCheckName(@QueryParameter String value)
                 throws IOException, ServletException {
-            if (value.length() == 0){
-                return FormValidation.error("O campo de Name não pode ser vazio.");
-            }
-
-            if (algorithm == null || algorithm.trim().isEmpty()) {
-                return FormValidation.error("O campo de algorithm não pode ser vazio.");
+            if (value.isEmpty()){
+                return FormValidation.error("Choose among the following options: FAST-pw, FAST-one, FAST-log, FAST-sqrt and FAST-all.");
             }
             return FormValidation.ok();
         }
