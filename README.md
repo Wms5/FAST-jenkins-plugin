@@ -6,6 +6,7 @@ TODO Describe what your plugin does here
 
 ## Project Replication
 
+While this plugin is not available on Jenkins marketplace you can run locally.
 In order to replicate the project follow these steps:
 
 ### Pre-requisites
@@ -57,17 +58,31 @@ In order to replicate the project follow these steps:
     2.  Click on Install and Restart
 
 3. Configure Maven on Jenkins:
-   manage jenkins -> global tool configuration -> maven -> add maven
-   -> Name and last version -> apply and save
+   1. Click on Manage Jenkins
+   2. Click on Global tool configuration 
+   3. Find Maven section
+   4. Click on add maven
+   5. Insert a name and Click on "install automatically"
+   6. Apply and Save
 
-4. Create new 
-   1. Click on New Task
-   2. 
-    
+4. Create new Jenkins Job
+   1. Click on New Item
+   2. Give a name to the Item and click "ok"
+
+### Jenkins Job Configuration
+
+1. Select "Git" as source code management and insert a Repository URL
+2. On the "Build Steps" section, click on "Add build step" and select "Invoke top-level Maven targets"
+3. Select maven version as the configured steps back and insert "build" on goals
+4. Click on "Add build step" and select "FAST"
+5. Insert the algorithm to make the prioritization. Ex: FAST-pw
+6. Click on "Add build step" and select "Invoke top-level Maven targets"
+7. Select maven version as the configured steps back and insert "test -Dtest=FASTPrioritizedSuite" 
+8. Click on "Save" button
+
+### Running the Jenkins Job 
+Click on "Build Now"
 
 ## LICENSE
 
 Licensed under MIT, see [LICENSE](LICENSE.md)
-
-Criar projeto maven: 
-
