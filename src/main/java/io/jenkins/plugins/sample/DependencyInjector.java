@@ -122,7 +122,7 @@ public class DependencyInjector {
             XPathFactory xPathFactory = XPathFactory.newInstance();
             XPath xPath = xPathFactory.newXPath();
 
-            String xpathExpression = "//dependencies"; // Expressão XPath
+            String xpathExpression = "//project/dependencies"; // Expressão XPath
             NodeList nodeList = (NodeList) xPath.evaluate(xpathExpression, doc, XPathConstants.NODESET);
 
             Element element = (Element) nodeList.item(0);
